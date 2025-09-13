@@ -150,8 +150,30 @@ class DuplicateValuesStrategy(DataInspectionStrategy):
             print("Sample Duplicate Rows:\n", duplicates.head())
 
 
+# =====================================================================
+# Concrete Strategy: Column Overview
+# =====================================================================
+# Prints Overview of the each column.
+class ColumnOverviewStrategy(DataInspectionStrategy):
+    def inspect(self, df: pd.DataFrame):
+        """
+        Print an overview of each column including its name,
+        data type, number of unique values, and missing value count.
 
+        Parameters:
+        df (pd.DataFrame): The dataframe to be inspected.
 
+        Returns:
+        None: Prints column overview information.
+        """
+        overview = pd.DataFrame({
+            "Column Name": df.columns,
+            "Data Type": df.dtypes,
+            "Missing Values (%)": (df.isnull().sum() / len(df)) * 100,
+            "Unique Values": df.nunique(),
+        })
+        print("\nColumn Overview:")
+        print(overview)
 
 
 # =====================================================================
@@ -236,3 +258,16 @@ if __name__ == "__main__":
     # inspector.set_strategy(SummaryStatisticsInspectionStrategy())
     # inspector.execute_inspection(df)
     pass
+
+__all__ = [
+    'DataInspector',
+    'DataInspectionStrategy',
+    'DataTypesInspectionStrategy', 
+    'SummaryStatisticsInspectionStrategy',
+    'DataShapeStrategy',
+    'DataHeadStrategy',
+    'DataTailStrategy',
+    'DataRandomRowsStrategy',
+    'DuplicateValuesStrategy',
+    'ColumnOverviewStrategy'
+]

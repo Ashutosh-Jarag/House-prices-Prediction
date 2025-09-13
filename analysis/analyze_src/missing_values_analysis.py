@@ -85,6 +85,83 @@ class SimpleMissingValuesAnalysis(MissingValuesAnalysisTemplate):
         plt.show()
 
 
+class MissingvaluePerPercentage(MissingValuesAnalysisTemplate):
+    def identify_missing_values(self, df: pd.DataFrame):
+        """
+        Prints the percentage of missing values for each column in the dataframe.
+        
+        Parameters:
+        df (pd.DataFrame): The dataframe to be analyzed.
+
+        Returns:
+        None: Prints the missing values percentage to the console.
+        
+        """
+        print("\nMissing Values Percentage by Column:")
+        print(((df.isnull().sum()/len(df))*100).sort_values(ascending=False))
+
+    def visualize_missing_values(self, df: pd.DataFrame):
+        """
+        Creates a bar plot to visualize the missing values percentage in the dataframe.
+        Parameters:
+        df (pd.DataFrame): The dataframe to be visualized.
+        Returns:
+        None: Displays a bar plot of missing values percentage.
+        
+        """
+        print("\nVisualizing Missing Values Percentage...")
+        plt.figure(figsize=(12, 6))
+        missing_percentage = (df.isnull().sum() / len(df)) * 100
+        missing_percentage.sort_values(ascending=False).head(5).plot(kind='bar', color='skyblue')
+
+        plt.xlabel('Columns')
+        plt.ylabel('Missing Percentage (%)')
+        plt.title('Missing Values Percentage per Column')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()  
+
+class ColumnWithToManyNulls(MissingValuesAnalysisTemplate):
+    def identify_missing_values(self, df: pd.DataFrame):
+        """
+        Print the columns with more than 70% null values.
+        
+        Parameters:
+        df (pd.DataFrame): The dataframe to be analyzed.
+        
+        Returns:
+        None: Prints the columns with more than 70% null values.
+        """
+        print("\nColumns with More Than 70% Null Values:")
+        null_percentages = (df.isnull().sum() / len(df)) * 100
+        print(null_percentages[null_percentages>70])
+
+    def visualize_missing_values(self, df: pd.DataFrame):
+        """
+        Creates a Horizontal bar plot to visualize the columns with more than 70% null values.
+
+        Parameters:
+        df (pd.DataFrame): The dataframe to be visualized.
+
+        Returns:
+        None: Displays a horizontal bar plot of columns with more than 70% null values.
+
+        """
+        print("\nVisualizing Columns with More Than 70% Null Values...")
+        plt.figure(figsize=(12, 6))
+        null_percentages = (df.isnull().sum() / len(df)) * 100
+        columns_with_many_nulls = null_percentages[null_percentages > 70]
+        columns_with_many_nulls.sort_values(inplace=True)
+        columns_with_many_nulls.plot(kind='barh', color='skyblue')
+        plt.xlabel('Missing Percentage (%)')
+        plt.ylabel('Columns')
+        plt.title('Columns with More Than 70% Null Values')
+        plt.tight_layout()
+        plt.show()
+
+
+
+
 # Example usage
 if __name__ == "__main__":
     # Example usage of the SimpleMissingValuesAnalysis class.
