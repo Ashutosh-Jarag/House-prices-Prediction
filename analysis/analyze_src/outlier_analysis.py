@@ -3,6 +3,11 @@ from abc import ABC, abstractmethod
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.stats import zscore
+import statsmodels
+import numpy as np
+from scipy import stats
+
 
 class OutlierAnalysisTemplate(ABC):
     def analyze(self, df: pd.DataFrame, numerical_columns : list):
@@ -49,6 +54,9 @@ class OutlierAnalysisTemplate(ABC):
         """
         pass
 
+
+
+
 class IQROutlierAnalysis(OutlierAnalysisTemplate):
     def identify_outliers(self, df, numerical_columns):
         """
@@ -70,7 +78,7 @@ class IQROutlierAnalysis(OutlierAnalysisTemplate):
             IQR = Q3 - Q1
             lower_bound = Q1 - 1.5 * IQR
             upper_bound = Q3 + 1.5 * IQR
-            outliers = df[df[col]<lower_bound] | df[df[col]>upper_bound]
+            outliers = df[(df[col] < lower_bound) | (df[col] > upper_bound)]
             print(f"{col}: Outerliers.shape[0] Outliers")
 
     def visualize_outliers(self, df, numerical_columns):
@@ -108,10 +116,31 @@ class ZScoreOutlierAnalysis(OutlierAnalysisTemplate):
 
             Returns:
             None
+            """
+            print("Identifying outliers using Z-Score method:")
+            for col in numerical_columns:
+                z_scores = zscore(df[col].dropna())
+                outliers = df[abs(z_scores) > 3]
+                print(f"{col}: {outliers.shape[0]} Outliers")
 
-    
-    
-    """
+
+    def visualize_outliers(self, df, numerical_columns):
+        """
+        Visulizing z-score outliers using boxplots and subplots for each numerical column.
+
+        Parameters:
+        df(pd.DataFrame): The dataframe to be analyzed.
+        numerical_columns(list): List of numerical columns to check for outliers.
+
+        """
+        print("Visualizing outliers using boxplots...")
+        plt.figure(figsize=(12, len(numerical_columns) * 4))
+        for i, col in enumerate(numerical_columns, 1):
+            plt.subplot(len(numerical_columns), 1, i)
+            sns.boxplot(x=df[col], color="lightcoral")
+            plt.title(f"Outliers in {col}")
+        plt.tight_layout()
+        plt.show()
 
 
 # Example usage

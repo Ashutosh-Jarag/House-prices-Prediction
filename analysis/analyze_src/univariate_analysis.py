@@ -72,6 +72,57 @@ class CategoricalUnivariateAnalysis(UnivariateAnalysisStrategy):
         plt.show()
 
 
+# Concrete Strategy for Summary Stats
+# -------------------------------------------
+# This strategy analyzes Summary Statistics by plotting their skewness and Kurtosis.
+class SummaryStatsUnivariateAnalysis(UnivariateAnalysisStrategy):
+    def analyze(self, df: pd.DataFrame, feature: str):
+        """
+        Prints summary statistics like mean, median, mode, variance, standard deviation,
+        skewness and kurtosis of a given column in a DataFrame.
+
+        Parameters:
+        df (pd.DataFrame): The dataframe containing the data.
+        feature (str): The name of the numerical feature/column to be analyzed. 
+
+        Returns:
+        None: Prints the summary statistics.
+        """
+        print(f"Summary Statistics for {feature}:")
+        print(f"Mean: {df[feature].mean()}")
+        print(f"Median: {df[feature].median()}")
+        print(f"Mode: {df[feature].mode()[0]}")
+
+        stats = df[feature].describe(percentiles=[0.25, 0.5, 0.75])
+        print(stats)
+
+        # ----------------------------------------
+        # Calculating Skewness and Kurtosis
+        skewness = df[feature].skew()
+        kurtosis = df[feature].kurt()
+        print(f"\nSkewness: {skewness:.2f}")
+        print(f"Kurtosis: {kurtosis:.2f}")
+
+        # ----------------------------------------
+        # visulization of skewness and kurtosis
+
+        fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+
+        # Histogram and KDE
+        sns.histplot(df[feature], kde=True, color='orange', bins= 30,ax=axes[0])
+        plt.title('Histogram and KDE Plot')
+
+        # Boxplot
+        sns.boxplot(y=df[feature], ax=axes[1])
+
+         # QQ Plot (Normality check)
+        stats.probplot(df[feature].dropna(), dist="norm", plot=axes[2])
+        axes[2].set_title(f"QQ Plot: {feature}")
+        
+        plt.tight_layout()
+        plt.show()
+
 # Context Class that uses a UnivariateAnalysisStrategy
 # ----------------------------------------------------
 # This class allows you to switch between different univariate analysis strategies.
